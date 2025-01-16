@@ -1,35 +1,32 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
 import './App.css';
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
+    <div className="app">
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <h1>We're Building Something Amazing!</h1>
+        <div className="icon-container">
+          <div className="icon">🔨</div>
+          <div className="icon rotating">⚙️</div>
+          <div className="icon">🔧</div>
+        </div>
+        <p>Our team is working hard to bring you an incredible experience. Stay tuned!</p>
+        <div className="progress-container">
+          <p>Development Progress:</p>
+          <div className="progress-controls">
+            <button onClick={() => setCount((prevCount) => Math.max(0, prevCount - 1))}>-</button>
+            <span className="progress-count">{count}%</span>
+            <button onClick={() => setCount((prevCount) => Math.min(100, prevCount + 1))}>+</button>
+          </div>
+        </div>
+        <p className="footer">Check back soon for updates!</p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   );
 }
 
 export default App;
+
