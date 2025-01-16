@@ -1,0 +1,53 @@
+name: CI Auth Service Workflow
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - main
+
+env:
+  AuthService_dir: /home/runner/work/TaskCrew/TaskCrew/services/auth-service
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Navigate to Auth Service directory
+        run: cd ${{ env.AuthService_dir }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd ${{ env.AuthService_dir }}
+          npm install
+
+      - name: Run ESLint
+        run: |
+          cd ${{ env.AuthService_dir }}
+          npm run lint
+
+      - name: Run Prettier
+        run: |
+          cd ${{ env.AuthService_dir }}
+          npm run format
+
+      # - name: Run tests
+      #   run: |
+      #     cd ${{ env.AuthService_dir }}
+      #     npm test -- --passWithNoTests
+
+      - name: Build the project
+        run: |
+          cd ${{ env.AuthService_dir }}
+          npm run build
