@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
-import { register, login } from "../controllers/authController";
+import { register, login } from '../controllers/authController';
 
 const router = Router();
 

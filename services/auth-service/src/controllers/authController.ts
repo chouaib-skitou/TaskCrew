@@ -17,6 +17,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     );
     if (userResponse.data) {
       res.status(400).json({ message: 'User already exists' });
+      return; // Prevent further execution
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,8 +33,12 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     res
       .status(201)
       .json({ message: 'User registered successfully', user: newUser.data });
-  } catch (error: any) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+    } else {
+      res.status(500).json({ message: 'Unknown server error' });
+    }
   }
 };
 
@@ -48,11 +53,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     if (!user) {
       res.status(404).json({ message: 'User not found' });
+      return; // Prevent further execution
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       res.status(400).json({ message: 'Invalid credentials' });
+      return; // Prevent further execution
     }
 
     const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: '1h' });
@@ -61,7 +68,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       token,
       user: { id: user.id, name: user.name, email: user.email },
     });
-  } catch (error: any) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+    } else {
+      res.status(500).json({ message: 'Unknown server error' });
+    }
   }
 };

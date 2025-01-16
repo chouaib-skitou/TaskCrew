@@ -1,9 +1,9 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import dotenv from "dotenv";
-import authRoutes from "./routes/authRoutes";
-import { setupSwagger } from "./config/swagger";
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import authRoutes from './routes/authRoutes';
+import { setupSwagger } from './config/swagger';
 
 dotenv.config();
 
@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Root route
-app.get("/api", (req, res) => {
+app.get('/api', (req, res) => {
   res.send(`Auth Service running on port ${PORT}`);
 });
 
@@ -23,7 +23,7 @@ app.get("/api", (req, res) => {
 setupSwagger(app);
 
 // Auth routes
-app.use("/api/auth", authRoutes);
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Auth Service running on port ${PORT}`);
