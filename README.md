@@ -62,7 +62,7 @@ TaskCrew is built using a microservices architecture to ensure:
 ```
 TaskCrew/
 ├── frontend/             # React.js application
-├── backend/              # Microservices code
+├── services/              # Microservices code
 │   ├── auth-service/     # Authentication service
 │   ├── user-service/     # User management service
 │   ├── task-service/     # Task management service
