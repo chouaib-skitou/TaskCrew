@@ -7,6 +7,7 @@ class User extends Model {
   public email!: string;
   public password!: string;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static associate(models: Record<string, typeof Model>): void {
     // Define associations if needed, e.g., User.hasMany(models.Post)
   }
