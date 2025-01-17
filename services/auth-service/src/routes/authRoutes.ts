@@ -2,7 +2,12 @@ import { Router } from 'express';
 import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
-import { register, login } from '../controllers/authController';
+import {
+  register,
+  login,
+  refreshToken,
+  logout,
+} from '../controllers/authController';
 
 const router = Router();
 
@@ -66,5 +71,57 @@ router.post('/register', (req: Request, res: Response) => register(req, res));
  *         description: Invalid credentials
  */
 router.post('/login', (req: Request, res: Response) => login(req, res));
+
+/**
+ * @swagger
+ * /api/auth/token:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Access token refreshed successfully
+ *       400:
+ *         description: Refresh token is required
+ *       403:
+ *         description: Invalid refresh token
+ */
+router.post('/refresh', (req: Request, res: Response) =>
+  refreshToken(req, res),
+);
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *       400:
+ *         description: Refresh token is required
+ *       403:
+ *         description: Invalid refresh token
+ */
+router.post('/logout', (req: Request, res: Response) => logout(req, res));
 
 export default router;
