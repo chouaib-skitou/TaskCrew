@@ -1,34 +1,66 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 
-// Load .env variables
 dotenv.config();
 
-const env = process.env.NODE_ENV || 'development';
+type Config = {
+  url: string;
+  dialect: string;
+  logging: boolean;
+  dialectOptions?: {
+    ssl: {
+      require: boolean;
+      rejectUnauthorized: boolean;
+    };
+  };
+};
 
-let databaseUrl: string;
+const configurations: Record<string, Config> = {
+  development: {
+    url: process.env.DEV_DATABASE_URL || '',
+    dialect: 'postgres',
+    logging: true,
+  },
+  test: {
+    url: process.env.TEST_DATABASE_URL || '',
+    dialect: 'postgres',
+    logging: false,
+  },
+  production: {
+    url: process.env.DATABASE_URL || '',
+    dialect: 'postgres',
+    logging: false,
+    dialectOptions: { ssl: { require: true, rejectUnauthorized: false } },
+  },
+};
 
-switch (env) {
-  case 'development':
-    databaseUrl = process.env.DEV_DATABASE_URL!;
-    break;
-  case 'test':
-    databaseUrl = process.env.TEST_DATABASE_URL!;
-    break;
-  case 'production':
-    databaseUrl = process.env.DATABASE_URL!;
-    break;
-  default:
-    throw new Error('Invalid NODE_ENV, could not determine database URL');
+const env: string = process.env.NODE_ENV || 'development';
+
+const currentConfig = configurations[env];
+
+// Ensure the database URL exists
+if (!currentConfig.url) {
+  throw new Error(`DATABASE_URL is not defined for the environment: ${env}`);
 }
 
-if (!databaseUrl) {
-  throw new Error('DATABASE_URL is not defined for the current environment');
-}
-
-const sequelize = new Sequelize(databaseUrl, {
-  dialect: 'postgres',
-  logging: false,
+// Initialize Sequelize with the correct arguments
+const sequelize = new Sequelize(currentConfig.url, {
+  dialect: currentConfig.dialect as 'postgres',
+  logging: currentConfig.logging,
+  ...(currentConfig.dialectOptions && {
+    dialectOptions: currentConfig.dialectOptions,
+  }),
 });
 
-export default sequelize;
+// Test the database connection
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Database connection established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+})();
+
+export { sequelize };
+module.exports = currentConfig; // Export raw configuration for Sequelize CLI
