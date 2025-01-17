@@ -1,4 +1,4 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
 class User extends Model {
@@ -8,10 +8,11 @@ class User extends Model {
   public password!: string;
 
   // Define optional `associate` method for associations
-  static associate(models: Record<string, typeof Model>) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static associate(_models: Record<string, typeof Model>) {
     // Define associations here if needed
     // Example:
-    // this.hasMany(models.Post, { foreignKey: 'userId', as: 'posts' });
+    // this.hasMany(_models.Post, { foreignKey: 'userId', as: 'posts' });
   }
 }
 
