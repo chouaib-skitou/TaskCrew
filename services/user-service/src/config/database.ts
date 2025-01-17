@@ -3,38 +3,29 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-type Config = {
-  url: string;
-  dialect: string;
-  logging: boolean;
-  dialectOptions?: {
-    ssl: {
-      require: boolean;
-      rejectUnauthorized: boolean;
-    };
-  };
-};
-
-const configurations: Record<string, Config> = {
+const configurations = {
   development: {
-    url: process.env.DEV_DATABASE_URL || '',
+    url: process.env.DEV_DATABASE_URL,
     dialect: 'postgres',
     logging: true,
   },
   test: {
-    url: process.env.TEST_DATABASE_URL || '',
+    url: process.env.TEST_DATABASE_URL,
     dialect: 'postgres',
     logging: false,
   },
   production: {
-    url: process.env.DATABASE_URL || '',
+    url: process.env.DATABASE_URL,
     dialect: 'postgres',
     logging: false,
     dialectOptions: { ssl: { require: true, rejectUnauthorized: false } },
   },
 };
 
-const env: string = process.env.NODE_ENV || 'development';
+// Define the keys of the configurations explicitly
+type ConfigKeys = keyof typeof configurations;
+
+const env = (process.env.NODE_ENV || 'development') as ConfigKeys; // Explicitly cast `env` to the correct type
 
 const currentConfig = configurations[env];
 
@@ -43,14 +34,17 @@ if (!currentConfig.url) {
   throw new Error(`DATABASE_URL is not defined for the environment: ${env}`);
 }
 
-// Initialize Sequelize with the correct arguments
-const sequelize = new Sequelize(currentConfig.url, {
-  dialect: currentConfig.dialect as 'postgres',
+// Handle the optional `dialectOptions` field
+const sequelizeConfig: any = {
+  dialect: currentConfig.dialect,
   logging: currentConfig.logging,
-  ...(currentConfig.dialectOptions && {
-    dialectOptions: currentConfig.dialectOptions,
-  }),
-});
+};
+
+if ('dialectOptions' in currentConfig && currentConfig.dialectOptions) {
+  sequelizeConfig.dialectOptions = currentConfig.dialectOptions;
+}
+
+export const sequelize = new Sequelize(currentConfig.url, sequelizeConfig);
 
 // Test the database connection
 (async () => {
@@ -61,6 +55,3 @@ const sequelize = new Sequelize(currentConfig.url, {
     console.error('Unable to connect to the database:', error);
   }
 })();
-
-export { sequelize };
-module.exports = currentConfig; // Export raw configuration for Sequelize CLI

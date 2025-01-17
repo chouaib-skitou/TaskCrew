@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '../config/database';
+import { sequelize } from '../config/database'; // Import sequelize instance
 
 class User extends Model {
   public id!: number;
@@ -8,7 +8,7 @@ class User extends Model {
   public password!: string;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static associate(models: Record<string, typeof Model>): void {
+  static associate(_models: Record<string, typeof Model>): void {
     // Define associations if needed, e.g., User.hasMany(models.Post)
   }
 }
@@ -35,7 +35,7 @@ User.init(
     },
   },
   {
-    sequelize,
+    sequelize, // Pass the sequelize instance here
     modelName: 'User',
     tableName: 'users',
     timestamps: true,
