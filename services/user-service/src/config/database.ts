@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 

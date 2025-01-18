@@ -18,7 +18,6 @@ class User extends Model {
   static associate(_models: Record<string, typeof Model>): void {}
 }
 
-
 User.init(
   {
     id: {
