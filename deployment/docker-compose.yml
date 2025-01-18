@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ../frontend
+    container_name: frontend
+    ports:
+      - "3000:80" # Expose port 3000 for frontend
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - auth-service
+      - user-service
+
+  auth-service:
+    build:
+      context: ../services/auth-service
+    container_name: auth-service
+    ports:
+      - "5000:5000" # Expose port 5000
+    environment:
+      - NODE_ENV=production
+      - USER_SERVICE_URL=http://user-service:5001
+    depends_on:
+      - user-service
+
+  user-service:
+    build:
+      context: ../services/user-service
+    container_name: user-service
+    ports:
+      - "5001:5001" # Expose port 5001
+    environment:
+      - NODE_ENV=production
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=users_db
+      - DATABASE_URL=postgres://postgres:postgres@user-db:5432/users_db
+    depends_on:
+      - user-db
+
+  user-db:
+    image: postgres:14
+    container_name: user-db
+    ports:
+      - "5432:5432" # Expose PostgreSQL port
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=users_db
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+
+volumes:
+  user-db-data:
