@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   getUsers,
   getUserById,
+  getUserByEmail,
   createUser,
   updateUser,
   deleteUser,
@@ -20,13 +21,50 @@ const router = Router();
  * @swagger
  * /api/users:
  *   get:
- *     summary: Retrieve all users
+ *     summary: Retrieve all users or a user by email
  *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: The user's email to search for
  *     responses:
  *       200:
- *         description: List of users
+ *         description: A list of users or a single user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   name:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *       404:
+ *         description: User not found
+ *       400:
+ *         description: Missing or invalid query parameter
+ *       500:
+ *         description: Server error
  */
-router.get('/', getUsers);
+router.get('/', (req, res) => {
+  if (req.query.email) {
+    return getUserByEmail(req, res);
+  }
+  return getUsers(req, res);
+});
 
 /**
  * @swagger
