@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
@@ -82,7 +83,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     // Retrieve user details from user-service (include password for login)
     const userResponse = await axios.get(
-      `${process.env.USER_SERVICE_URL}/api/users?email=${email}&includePassword=true`
+      `${process.env.USER_SERVICE_URL}/api/users?email=${email}&includePassword=true`,
     );
     const user = userResponse.data;
 
@@ -111,7 +112,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     });
   } catch (error: unknown) {
     console.error('[LOGIN]: Error during login:', error);
-    res.status(500).json({ message: 'Server error', error: (error as Error).message });
+    res
+      .status(500)
+      .json({ message: 'Server error', error: (error as Error).message });
   }
 };
 
@@ -144,7 +147,6 @@ export const refreshToken = async (
     }
 
     const accessToken = generateAccessToken(decoded.id);
-
     res.status(200).json({ accessToken, refreshToken: token });
   } catch (_: unknown) {
     res.status(403).json({ message: 'Invalid refresh token' });
