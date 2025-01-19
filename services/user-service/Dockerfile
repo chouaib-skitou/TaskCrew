@@ -14,7 +14,7 @@ RUN npm install
 COPY dist ./dist
 
 # Copy the .env file into the container
-COPY .env .env
+# COPY .env .env
 
 # Expose the application port
 EXPOSE 5001
