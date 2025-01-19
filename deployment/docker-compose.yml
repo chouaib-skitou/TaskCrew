@@ -1,5 +1,9 @@
 version: '3.9'
 
+networks:
+  app-network:
+    driver: bridge
+
 services:
   frontend:
     build:
@@ -12,6 +16,8 @@ services:
     depends_on:
       - auth-service
       - user-service
+    networks:
+      - app-network
 
   auth-service:
     build:
@@ -24,6 +30,8 @@ services:
       - USER_SERVICE_URL=http://user-service:5001
     depends_on:
       - user-service
+    networks:
+      - app-network
 
   user-service:
     build:
@@ -36,21 +44,31 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=users_db
-      - DATABASE_URL=postgres://postgres:postgres@user-db:5432/users_db
+      - DATABASE_URL=postgres://postgres:postgres@user-db:5432/users_db # Changed port to 5432
+      - DEV_DATABASE_URL=postgres://postgres:postgres@user-db:5432/users_db # Changed port to 5432
     depends_on:
       - user-db
+    networks:
+      - app-network
 
   user-db:
     image: postgres:14
     container_name: user-db
     ports:
-      - "5432:5432" # Expose PostgreSQL port
+      - "5433:5432" # Map local port 5433 to container port 5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=users_db
     volumes:
       - user-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
 
 volumes:
   user-db-data:
